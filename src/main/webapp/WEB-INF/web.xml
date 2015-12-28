@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+    <display-name>Web Application</display-name>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/conf/appContext.xml,
+            classpath*:/META-INF/spring/applicationContext-core.xml,
+            classpath*:/META-INF/spring/applicationContext-dal.xml,
+            classpath*:/META-INF/spring/applicationContext-dubbo.xml,
+            classpath*:/META-INF/spring/dubbo-service-reference.xml
+        </param-value>
+    </context-param>
+
+    <!--根据spring的配置文件加载spring -->
+    <listener>
+        <listener-class>com.ofpay.comm.spring.SystemContextLoaderListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>setEncoding</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>setEncoding</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- session config -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <mime-mapping>
+        <extension>csv</extension>
+        <mime-type>application/msexcel</mime-type>
+    </mime-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp,index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

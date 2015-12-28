@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	       http://www.springframework.org/schema/context
+	       http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	       http://www.springframework.org/schema/aop
+	       http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	       http://www.springframework.org/schema/tx
+	       http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+    <!-- JDBC参数配置 -->
+    <bean
+            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <!-- 单元测试配置 -->
+                <value>classpath:conf/jdbc.properties</value>
+                <value>classpath:conf/dubboapp.properties</value>
+                <value>classpath:conf/memcache.properties</value>
+                <value>classpath:conf/redis.properties</value>
+                <value>classpath*:/META-INF/ofpay/api/config/*version.properties</value>
+
+                <!-- 自测配置 -->
+                <value>/WEB-INF/conf/jdbc.properties</value>
+                <value>/WEB-INF/conf/dubboapp.properties</value>
+                <value>/WEB-INF/conf/memcache.properties</value>
+                <value>/WEB-INF/conf/redis.properties</value>
+                <!-- 测试环境、生产环境 -->
+                <value>file:/apps/temp1/conf/jdbc.properties</value>
+                <value>file:/apps/temp1/conf/dubboapp.properties</value>
+                <value>file:/apps/temp1/conf/memcache.properties</value>
+                <value>file:/apps/temp1/conf/redis.properties</value>
+                <!--自动部署环境-->
+                <value>file:/opt/tomcat7/conf/appconf/jdbc.properties</value>
+                <value>file:/opt/tomcat7/conf/appconf/dubboapp.properties</value>
+                <value>file:/opt/tomcat7/conf/appconf/memcache.properties</value>
+                <value>file:/opt/tomcat7/conf/redis.properties</value>
+                <!--新自动部署环境-->
+                <value>file:${CATALINA_BASE}/conf/jdbc.properties</value>
+                <value>file:${CATALINA_BASE}/conf/dubboapp.properties</value>
+                <value>file:${CATALINA_BASE}/conf/appconf/memcache.properties</value>
+                <value>file:${CATALINA_BASE}/conf/redis.properties</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- 加载异常编码 -->
+    <bean id="errorPropertyConfigurer" class="com.ofpay.comm.spring.ErrorCodesPropertyConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:/META-INF/errorcodes/*Error.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 加载URL相关 -->
+    <bean id="urlPropertyConfigurer" class="com.ofpay.comm.spring.URLPropertyConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/conf/urlconfig.properties</value>
+                <value>file:/apps/temp1/conf/urlconfig.properties</value>
+                <value>file:/opt/tomcat7/conf/appconf/urlconfig.properties</value>
+                <value>file:${CATALINA_BASE}/conf/urlconfig.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ========================= RESOURCE DEFINITIONS ========================= -->
+    <!--Local DataSource dbcp that works in any environment -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.ManagedBasicDataSource"
+          destroy-method="close">
+        <constructor-arg value="com.ofpay:name=acctdb"/>
+        <property name="driverClassName">
+            <value>${jdbc.driverClassName}</value>
+        </property>
+        <property name="url">
+            <value>${jdbc.url}</value>
+        </property>
+        <property name="username">
+            <value>${jdbc.username}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc.password}</value>
+        </property>
+        <property name="maxActive">
+            <value>20</value>
+        </property>
+        <property name="initialSize">
+            <value>5</value>
+        </property>
+        <property name="maxWait">
+            <value>30000</value>
+        </property>
+        <property name="maxIdle">
+            <value>10</value>
+        </property>
+        <property name="minIdle">
+            <value>5</value>
+        </property>
+        <property name="removeAbandoned">
+            <value>true</value>
+        </property>
+        <property name="removeAbandonedTimeout">
+            <value>180</value>
+        </property>
+        <property name="connectionProperties">
+            <value>clientEncoding=UTF-8</value>
+        </property>
+        <property name="testWhileIdle">
+            <value>true</value>
+        </property>
+        <property name="testOnBorrow">
+            <value>false</value>
+        </property>
+        <property name="testOnReturn">
+            <value>false</value>
+        </property>
+        <property name="validationQuery">
+            <value>select 1 from dual</value>
+        </property>
+        <property name="validationQueryTimeout">
+            <value>1000</value>
+        </property>
+        <property name="timeBetweenEvictionRunsMillis">
+            <value>120000</value>
+        </property>
+        <property name="numTestsPerEvictionRun">
+            <value>20</value>
+        </property>
+    </bean>
+
+    <bean id="nativeJdbcExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"
+          lazy-init="true"/>
+
+    <!-- Spring提供的jdbcTemplate配置 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+    </bean>
+
+    <!--不管是以块的方式还是以流的方式，通过 LobCreator 和 LobHandler 方便地访问 LOB 数据 -->
+    <bean id="defaultLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true"/>
+
+    <!-- Spring提供的iBatis的SqlMap配置 -->
+    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocations" value="classpath*:/META-INF/ibatis/sqlMapConfig*.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="lobHandler" ref="defaultLobHandler"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource">
+            <ref local="dataSource"/>
+        </property>
+    </bean>
+
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="gen*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="find*" propagation="SUPPORTS" isolation="READ_COMMITTED"/>
+            <tx:method name="get*" propagation="SUPPORTS" isolation="READ_COMMITTED"/>
+            <tx:method name="list*" propagation="SUPPORTS" isolation="READ_COMMITTED"/>
+            <tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="serviceOperation" expression="execution(* com.ofpay..*Service*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceOperation"/>
+    </aop:config>
+
+    <!-- 加入spring注解扫描 -->
+    <context:component-scan base-package="com.ofpay"/>
+
+    <context:mbean-export default-domain="com.ofpay" registration="replaceExisting"/>
+    <bean id="dubboMBeanServer" class="com.ofpay.comm.monitor.MonitorDubbo"></bean>
+
+    <!-- 使用annotation定义Aspect -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+</beans>
