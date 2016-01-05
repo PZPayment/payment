@@ -8,3 +8,8 @@ jdbc:
     initialSize: 1
     maxIdle: 5
     minIdle: 1
+# MyBatis
+mybatis:
+    typeAliasesPackage: com.kan.generator.domain
+    mapperLocations: com.kan.generator.mapper.*.xml
+    configLocation: classpath:/mybatis-config.xml

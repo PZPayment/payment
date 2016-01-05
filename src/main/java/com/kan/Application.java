@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Application {
     public static void main(String[] args) {
-        System.out.println("kais");
         SpringApplication.run(Application.class);
     }
 }

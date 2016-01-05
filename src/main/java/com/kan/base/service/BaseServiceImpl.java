@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
 public abstract class BaseServiceImpl<T extends AbstractEntity, E extends AbstractCriteria>
 		implements BaseService<T, E> {
 
-	protected abstract BaseDao<T, String> getDao();
+	protected abstract BaseDao<T, E,String> getDao();
 
 	protected Class<T> entityClazz;
 
@@ -34,9 +34,6 @@ public abstract class BaseServiceImpl<T extends AbstractEntity, E extends Abstra
 	@Override
 	public T create(T entity) {
 		Assert.notNull(entity);
-		String order = entity.getId() == null ? IdGen.uuid() : entity.getId()
-				.trim();
-		entity.setOrderNo(order);
 		getDao().insertSelective(entity);
 		return entity;
 	}
@@ -96,6 +93,13 @@ public abstract class BaseServiceImpl<T extends AbstractEntity, E extends Abstra
 	public T findOne(String id) {
 		Assert.notNull(id);
 		return getDao().selectByPrimaryKey(id);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public T findOneByOutTradeNo(String outId) {
+		Assert.notNull(outId);
+		return getDao().selectByOutNo(outId);
 	}
 
 	@Override

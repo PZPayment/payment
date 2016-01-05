@@ -22,6 +22,8 @@ public interface BaseService<T extends Serializable, E> {
 
 	T findOne(String id);
 
+	T findOneByOutTradeNo(String outTradeNo);
+
 	boolean exists(String id);
 
 	long count();

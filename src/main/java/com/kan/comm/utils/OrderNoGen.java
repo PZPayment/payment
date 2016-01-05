@@ -14,7 +14,6 @@ public abstract class OrderNoGen {
 	private static SecureRandom random = new SecureRandom();
 	
 	public static String getOrder(Short orderType){
-		switch ()
 		return UUID.randomUUID().toString().replace("-", "");
 	}
 }

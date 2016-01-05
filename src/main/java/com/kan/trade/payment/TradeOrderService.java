@@ -1,6 +1,8 @@
 package com.kan.trade.payment;
 
-import org.springframework.stereotype.Service;
+import com.kan.base.service.BaseService;
+import com.kan.generator.domain.PayTradeOrder;
+import com.kan.generator.domain.PayTradeOrderCriteria;
 
 /**
  * 版      权:  江苏千米网络科技有限公司  <br>
@@ -9,7 +11,8 @@ import org.springframework.stereotype.Service;
  * 创 建 人 : 方超(OF716)  <br>
  * 修改时间:  15/12/29      <br>
  */
-@Service
-public class TradeOrderService {
+public interface TradeOrderService extends BaseService<PayTradeOrder, PayTradeOrderCriteria> {
+
+
 
 }
